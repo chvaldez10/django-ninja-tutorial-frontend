@@ -6,15 +6,22 @@ const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Home() {
   const { data, error } = useSWR(
-    "http://127.0.0.1:8001/api/waitlists/1",
+    "http://127.0.0.1:8000/api/waitlists/1",
     fetcher
   );
 
-  if (error) {
-    console.log(error);
-  } else {
+  const handleClick = () => {
     console.log(data);
-  }
+  };
 
-  return <div>Hello World</div>;
+  return (
+    <div className="flex justify-center items-center h-screen">
+      <button
+        onClick={handleClick}
+        className="bg-blue-500 text-white p-2 rounded-md"
+      >
+        Click me
+      </button>
+    </div>
+  );
 }
