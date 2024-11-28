@@ -1,47 +1,72 @@
-"use client"
+"use client";
 
-import Image from "next/image"
-import Link from "next/link"
+import Image from "next/image";
+import Link from "next/link";
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { useAuth } from "@/components/authProvider"
+import { useEffect, useState } from "react";
 
-const LOGIN_URL = "/api/login/"
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { useAuth } from "@/components/authProvider";
 
+const LOGIN_URL = "/api/login/";
 
 export default function Page() {
-  const auth = useAuth()
-  async function handleSubmit (event) {
-        event.preventDefault()
-        console.log(event, event.target)
-        const formData = new FormData(event.target)
-        const objectFromForm = Object.fromEntries(formData)
-        const jsonData = JSON.stringify(objectFromForm)
-        const requestOptions = {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: jsonData
-        }
-        const response = await fetch(LOGIN_URL, requestOptions)
-        let data = {}
-        try {
-          data = await response.json()
-        } catch (error) {
-          
-        }
-        // const data = await response.json()
-        if (response.ok) {
-            console.log("logged in")
-            auth.login(data?.username)
-        } else {
-          console.log(await response.json())
-        }
+  const auth = useAuth();
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLoading(false);
+    }, 100);
+
+    return () => clearTimeout(timer);
+  }, []);
+
+  async function handleSubmit(event) {
+    event.preventDefault();
+
+    // get the form data
+    const formData = new FormData(event.target);
+    const objectFromForm = Object.fromEntries(formData);
+    const jsonData = JSON.stringify(objectFromForm);
+
+    const requestOptions = {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: jsonData,
+    };
+
+    // call the login API
+    const response = await fetch(LOGIN_URL, requestOptions);
+
+    let data = {};
+
+    try {
+      data = await response.json();
+    } catch (error) {
+      console.log("error parsing response", error);
     }
-  return (
+
+    // if the response is ok, login the user
+    if (response.ok) {
+      console.log("logged in");
+      auth.login(data?.username);
+    } else {
+      console.log(await response.json());
+    }
+  }
+
+  return loading ? (
+    <div className="flex justify-center items-center h-screen">Loading...</div>
+  ) : auth.isAuthenticated ? (
+    <div className="flex justify-center items-center h-screen">
+      You are already logged in
+    </div>
+  ) : (
     <div className="w-full lg:grid lg:min-h-[85vh]  lg:grid-cols-2 xl:min-h-[90vh]">
       <div className="flex items-center justify-center py-12">
         <div className="mx-auto grid w-[350px] gap-6">
@@ -52,32 +77,29 @@ export default function Page() {
             </p>
           </div>
           <div className="grid gap-4">
-            <form onSubmit={handleSubmit}>
-            <div className="grid gap-2">
-              <Label htmlFor="username">Username</Label>
-              <Input
-                id="username"
-                type="username"
-                name="username"
-                placeholder="Your username"
-                required
-              />
-            </div>
-            <div className="grid gap-2">
-              <div className="flex items-center">
-                <Label htmlFor="password">Password</Label>
-                <Link
-                  href="/forgot-password"
-                  className="hidden"
-                >
-                  Forgot your password?
-                </Link>
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid gap-2">
+                <Label htmlFor="username">Username</Label>
+                <Input
+                  id="username"
+                  type="username"
+                  name="username"
+                  placeholder="Your username"
+                  required
+                />
               </div>
-              <Input id="password" name="password" type="password" required />
-            </div>
-            <Button type="submit" className="w-full">
-              Login
-            </Button>
+              <div className="grid gap-2">
+                <div className="flex items-center">
+                  <Label htmlFor="password">Password</Label>
+                  <Link href="/forgot-password" className="hidden">
+                    Forgot your password?
+                  </Link>
+                </div>
+                <Input id="password" name="password" type="password" required />
+              </div>
+              <Button type="submit" className="w-full bg-violet-600">
+                Login
+              </Button>
             </form>
           </div>
           <div className="mt-4 text-center text-sm">
@@ -88,15 +110,15 @@ export default function Page() {
           </div>
         </div>
       </div>
-      <div className="hidden bg-muted lg:block">
+      <div className="mx-auto bg-muted w-96 h-96">
         <Image
-          src="/placeholder.svg"
+          src="/nmixx-logo.jpg"
           alt="Image"
-          width="1920"
-          height="1080"
-          className="h-full w-full object-cover dark:brightness-[0.2] dark:grayscale"
+          width="1200"
+          height="1200"
+          className="h-full w-full object-cover"
         />
       </div>
     </div>
-  )
+  );
 }
