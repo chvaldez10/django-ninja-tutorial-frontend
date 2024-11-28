@@ -2,9 +2,25 @@ import { Inter } from "next/font/google";
 
 // context providers
 import { AuthProvider } from "@/components/authProvider";
+import { ThemeProvider } from "@/components/themeProvider";
 
+// utils
+import { Inter as FontSans } from "next/font/google";
+
+import { cn } from "@/lib/utils";
+
+const fontSans = FontSans({
+  subsets: ["latin"],
+  variable: "--font-sans",
+});
+
+// styles
 import "./globals.css";
 
+// layout
+import BaseLayout from "@/components/layout/BaseLayout";
+
+// metadata
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata = {
@@ -14,9 +30,20 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
-      <body className={inter.className}>
-        <AuthProvider>{children}</AuthProvider>
+    <html lang="en" suppressHydrationWarning>
+      <body
+        className={cn(
+          "min-h-screen bg-background font-sans antialiased",
+          fontSans.variable
+        )}
+      >
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem>
+          <AuthProvider>
+            <BaseLayout className="flex min-h-[calc(100vh_-_theme(spacing.16))] flex-1 flex-col bg-muted/40">
+              {children}
+            </BaseLayout>
+          </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   );

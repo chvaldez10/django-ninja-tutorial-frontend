@@ -1,8 +1,6 @@
-"use client"
+"use client";
 
-import WaitlistTable from './table';
-
-
+import WaitlistTable from "./table";
 
 export default function Page() {
   return (

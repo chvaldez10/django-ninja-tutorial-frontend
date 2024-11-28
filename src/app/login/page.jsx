@@ -56,7 +56,7 @@ export default function Page() {
       console.log("logged in");
       auth.login(data?.username);
     } else {
-      console.log(await response.json());
+      console.log(data);
     }
   }
 
