@@ -1,27 +1,25 @@
 "use client";
-
+import { useState } from "react";
+import Image from "next/image";
 import useSWR from "swr";
+import { useAuth } from "@/components/authProvider";
+import { ThemeToggleButton } from "@/components/themeToggleButton";
+import WaitlistForm from "./waitlists/forms";
 
 const fetcher = (...args) => fetch(...args).then((res) => res.json());
 
 export default function Home() {
-  const { data, error } = useSWR(
-    "http://127.0.0.1:8000/api/waitlists/1",
-    fetcher
-  );
-
-  const handleClick = () => {
-    console.log(data);
-  };
+  const auth = useAuth();
 
   return (
-    <div className="flex justify-center items-center h-screen">
-      <button
-        onClick={handleClick}
-        className="bg-blue-500 text-white p-2 rounded-md"
-      >
-        Click me
-      </button>
-    </div>
+    <main className="flex min-h-screen flex-col items-center justify-between p-24">
+      <div>
+        <WaitlistForm />
+      </div>
+      <div>{auth.isAuthenticated ? "Hello user" : "Hello guest"}</div>
+      <div>
+        <ThemeToggleButton />
+      </div>
+    </main>
   );
 }
